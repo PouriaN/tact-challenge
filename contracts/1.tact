@@ -7,6 +7,13 @@ import "@stdlib/deploy";
   You also need to implement one getter with the name "counter" to get the current number from the state.
 */
 
+extends mutates fun add(self: Int, addedValue: Int) {
+  self = self + addedValue;
+}
+extends mutates fun sub(self: Int, subValue: Int) {
+  self = self - subValue;
+}
+
 message Add {
   queryId: Int as uint64;
   number: Int as uint32;
@@ -25,11 +32,11 @@ contract Task1 with Deployable {
     }
 
     receive(msg: Add) {
-      self.counter = self.counter + msg.number;
+      self.counter.add(msg.number);
     }
     
     receive(msg: Subtract) {
-      self.counter = self.counter - msg.number;
+      self.counter.sub(msg.number);
     }
 
     get fun counter(): Int {

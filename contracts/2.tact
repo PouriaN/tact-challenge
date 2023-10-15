@@ -13,6 +13,11 @@ import "@stdlib/deploy";
   In refund transaction, it is important to have a check that the refund message came from the admin address
 */
 
+message depositToOnwer {
+  sender: Address;
+  body: Slice;
+}
+
 message(0x44) Refund {
   queryId: Int as uint64;
   sender: Address;
@@ -29,5 +34,16 @@ contract Task2 with Deployable {
   }
 
   receive(msg: Slice) {
+    send(
+      SendParameters{
+        to: self.admin,
+        bounce: true,
+        value: context().value,
+        body: depositToOnwer{sender: sender(), body: msg}.toCell(),
+        // body: beginCell().storeUint(1,1).endCell(),
+        mode: SendIgnoreErrors
+        // mode: SendRemainingBalance + SendIgnoreErrors
+      }
+    );
   }
 }
