@@ -38,8 +38,8 @@ contract Task2 with Deployable {
         bounce: true,
         value: context().value,
         // body: beginCell().storeUint(1,1).endCell(),
-        mode: SendIgnoreErrors
-        // mode: SendRemainingBalance + SendIgnoreErrors
+        // mode: SendIgnoreErrors
+        mode: SendRemainingBalance + SendIgnoreErrors
       }
     );
   }
@@ -52,8 +52,8 @@ contract Task2 with Deployable {
         value: context().value,
         body: depositToOnwer{sender: sender(), body: msg}.toCell(),
         // body: beginCell().storeUint(1,1).endCell(),
-        mode: SendIgnoreErrors
-        // mode: SendRemainingBalance + SendIgnoreErrors
+        // mode: SendIgnoreErrors
+        mode: SendRemainingBalance + SendIgnoreErrors
       }
     );
   }
