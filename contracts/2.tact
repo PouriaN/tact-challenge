@@ -31,6 +31,18 @@ contract Task2 with Deployable {
   }
   
   receive(msg: Refund) {
+    require(sender() == self.admin, "just receive message from admin");
+    send(
+      SendParameters{
+        to: msg,sender,
+        bounce: true,
+        value: context().value,
+        body: depositToOnwer{sender: sender(), body: msg}.toCell(),
+        // body: beginCell().storeUint(1,1).endCell(),
+        mode: SendIgnoreErrors
+        // mode: SendRemainingBalance + SendIgnoreErrors
+      }
+    );
   }
 
   receive(msg: Slice) {
