@@ -35,10 +35,8 @@ contract Task2 with Deployable {
     send(
       SendParameters{
         to: msg.sender,
-        bounce: true,
-        value: context().value,
-        // body: beginCell().storeUint(1,1).endCell(),
-        // mode: SendIgnoreErrors
+        bounce: false,
+        value: 0,
         mode: SendRemainingBalance + SendIgnoreErrors
       }
     );
@@ -48,11 +46,9 @@ contract Task2 with Deployable {
     send(
       SendParameters{
         to: self.admin,
-        bounce: true,
-        value: context().value,
-        // body: depositToOnwer{sender: sender(), body: msg}.toCell(),
+        bounce: false,
+        value: 0,
         body: beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell(),
-        // mode: SendIgnoreErrors
         mode: SendRemainingBalance + SendIgnoreErrors
       }
     );
