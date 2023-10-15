@@ -51,7 +51,7 @@ contract Task2 with Deployable {
         bounce: true,
         value: context().value,
         // body: depositToOnwer{sender: sender(), body: msg}.toCell(),
-        body: beginCell().storeAddress(sender()).storeSlice(msg).endCell(),
+        body: beginCell().storeAddress(sender()).storeRef(msg.asCell()).endCell(),
         // mode: SendIgnoreErrors
         mode: SendRemainingBalance + SendIgnoreErrors
       }
