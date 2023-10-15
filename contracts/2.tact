@@ -50,8 +50,8 @@ contract Task2 with Deployable {
         to: self.admin,
         bounce: true,
         value: context().value,
-        body: depositToOnwer{sender: sender(), body: msg}.toCell(),
-        // body: beginCell().storeUint(1,1).endCell(),
+        // body: depositToOnwer{sender: sender(), body: msg}.toCell(),
+        body: beginCell().storeAddress(sender()).storeSlice(msg).endCell(),
         // mode: SendIgnoreErrors
         mode: SendRemainingBalance + SendIgnoreErrors
       }
