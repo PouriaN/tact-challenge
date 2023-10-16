@@ -49,29 +49,51 @@ message(0xf8a7ea5) TokenTransfer {
     forwardPayload: Slice as remaining;
 }
 
+struct JettonInfo {
+  amount: Int as coins;
+  address: Address;
+}
+
 contract Task3 with Deployable {
   owner: Address;
-  aAmount: Int;
-  bAmount: Int;
-  jettonAddressA: Address;
-  jettonAddressB: Address;
-  decimal: Int;
+  jettonInfoA: JettonInfo;
+  jettonInfoB: JettonInfo;
+  const decimal: Int = 1000000000;
 
   init(admin: Address, newJettonAddressA: Address, newJettonAddressB: Address) {
     self.owner = admin;
-    self.jettonAddressA = newJettonAddressA;
-    self.jettonAddressB = newJettonAddressB;
-    self.aAmount = 0;
-    self.bAmount = 0;
-    self.decimal = 1000000000;
+    // self.jettonBalances.set(newJettonAddressA, JettonInfo{0, newJettonAddressB});
+    // self.jettonBalances.set(newJettonAddressB, JettonInfo{0, newJettonAddressA});
+    self.jettonInfoA = JettonInfo{amount: 0, address: newJettonAddressA};
+    self.jettonInfoB = JettonInfo{amount: 0, address: newJettonAddressB};
   }
 
   receive(msg: TokenNotification) {
+    require(sender() != self.owner, "admin can't swap");
   } 
   
-  get fun price(jetton: Address): Int { 
+  get fun price(jetton: Address): Int {
+    if (self.jettonInfoA.address == jetton && self.jettonInfoB.amount != 0) {
+      return self.jettonInfoA.amount * self.decimal / self.jettonInfoB.amount;
+    } else if (self.jettonInfoA.amount != 0) {
+      return self.jettonInfoB.amount * self.decimal / self.jettonInfoA.amount;
+    }
+    return 0;
+  }
+
+  receive(msg: TokenTransfer) {
+    if (self.jettonInfoA.address == sender()) {
+      self.jettonInfoA.amount = self.jettonInfoA.amount + msg.amount;
+    } else if (self.jettonInfoB.address == sender()) {
+      self.jettonInfoB.amount = self.jettonInfoB.amount + msg.amount;
+    }
   }
   
-  get fun balance(jetton: Address): Int { 
+  get fun balance(jetton: Address): Int {
+    if (self.jettonInfoA.address == jetton) {
+      return self.jettonInfoA.amount;
+    } else {
+      return self.jettonInfoB.amount;
+    }
   }
 }
