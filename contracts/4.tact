@@ -67,9 +67,10 @@ contract Task4 with Deployable {
             queryId: msg.queryId,
             newOwner: msg.prevOwner,
             responseDestination: myAddress(),
+            customPayload: null,
             forwardAmount: 0,
             forwardPayload: msg.forwardPayload
-          },
+          }.toCell(),
           mode: SendRemainingBalance + SendIgnoreErrors
         }
       );
