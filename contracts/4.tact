@@ -68,7 +68,7 @@ contract Task4 with Deployable {
             newOwner: msg.prevOwner,
             responseDestination: myAddress(),
             customPayload: null,
-            forwardAmount: 0,
+            forwardAmount: context().value,
             forwardPayload: msg.forwardPayload
           }.toCell(),
           mode: SendRemainingBalance + SendIgnoreErrors
@@ -85,6 +85,9 @@ contract Task4 with Deployable {
   }
 
   get fun time(): Int {
+    if (self.lockTime || now() > self.lockTime) {
+      return 0;
+    }
     return self.lockTime - now();
   }
 
