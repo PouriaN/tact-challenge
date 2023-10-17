@@ -85,7 +85,7 @@ contract Task4 with Deployable {
     let sender: Address = context().sender;
     require(sender == self.prevOwner, "Invalid sender");
     if (self.lockTime > now()) {
-      // self.reply("NFT is still locked".asComment());
+      self.reply("NFT is still locked".asComment());
     }
     send(
       SendParameters{
@@ -94,8 +94,8 @@ contract Task4 with Deployable {
         body: Transfer{
           queryId: msg.queryId,
           newOwner: self.prevOwner!!,
-          responseDestination: sender,
-          customPayload: emptyCell(),
+          responseDestination: myAddress(),
+          customPayload: null,
           forwardAmount: 0,
           forwardPayload: emptySlice()
         }.toCell(),
