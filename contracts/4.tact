@@ -73,7 +73,7 @@ contract Task4 with Deployable {
           }.toCell(),
           mode: SendRemainingValue
         }
-    );
+      );
     } else {
       self.isLocked = true;
       self.nftAddress = sender();
