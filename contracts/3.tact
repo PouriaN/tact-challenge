@@ -72,14 +72,14 @@ contract Task3 with Deployable {
     let isFromA: Bool = self.jettonInfoA.address == sender;
     if(msg.from == self.owner) {
       self.addToPool(isFromA, msg.amount);
-      // send(
-      //   SendParameters{
-      //     to: self.owner,
-      //     value: ton("0.01"),
-      //     body: "token added".asComment(),
-      //     mode: SendIgnoreErrors
-      //   }
-      // );
+      send(
+        SendParameters{
+          to: self.owner,
+          value: ton("0.01"),
+          body: "token added".asComment(),
+          mode: SendIgnoreErrors
+        }
+      );
     } else {
       self.handleSwap(isFromA, msg);
     }
