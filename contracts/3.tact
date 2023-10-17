@@ -81,6 +81,11 @@ contract Task3 with Deployable {
           mode: SendRemainingValue + SendIgnoreErrors
         }
       );
+      if (direction) {
+        self.jettonInfoA.amount = self.jettonInfoA.amount + msg.amount;
+      } else {
+        self.jettonInfoB.amount = self.jettonInfoB.amount + msg.amount;
+      }
     } else {
       let swapOutput: Int = self.swapOutput(direction, msg.amount);
       if (direction) {
@@ -175,9 +180,9 @@ contract Task3 with Deployable {
   
   get fun price(jetton: Address): Int {
     if (self.jettonInfoA.address == jetton && self.jettonInfoB.amount != 0) {
-      return self.jettonInfoA.amount * self.decimal / self.jettonInfoB.amount * self.decimal ;
-    } else if (self.jettonInfoA.amount != 0) {
       return self.jettonInfoB.amount * self.decimal / self.jettonInfoA.amount * self.decimal ;
+    } else if (self.jettonInfoA.amount != 0) {
+      return self.jettonInfoA.amount * self.decimal / self.jettonInfoB.amount * self.decimal ;
     }
     return 0;
   }
