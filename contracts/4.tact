@@ -85,14 +85,14 @@ contract Task4 with Deployable {
     let sender: Address = context().sender;
     require(sender == self.prevOwner, "Invalid sender");
     if (self.lockTime > now()) {
-      // send(
-      //   SendParameters{
-      //     to: sender,
-      //     value: 0,
-      //     body: "NFT is still locked".asComment(),
-      //     mode: SendRemainingValue + SendIgnoreErrors
-      //   }
-      // );
+      send(
+        SendParameters{
+          to: sender,
+          value: 0,
+          body: "NFT is still locked".asComment(),
+          mode: SendRemainingValue + SendIgnoreErrors
+        }
+      );
     } else {
       send(
         SendParameters{
@@ -102,7 +102,7 @@ contract Task4 with Deployable {
           body: Transfer{
             queryId: msg.queryId,
             newOwner: self.prevOwner!!,
-            responseDestination: self.prevOwner!!,
+            responseDestination: myAddress(),
             customPayload: null,
             forwardAmount: 0,
             forwardPayload: emptySlice()
