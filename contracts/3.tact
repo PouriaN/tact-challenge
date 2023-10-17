@@ -116,7 +116,7 @@ contract Task3 with Deployable {
       amount: swapOutput,
       queryId: msg.queryId,
       destination: msg.from,
-      responseDestination: msg.from,
+      responseDestination: myAddress(),
       customPayload: null,
       forwardTonAmount: 0,
       forwardPayload: msg.forwardPayload
@@ -152,31 +152,20 @@ contract Task3 with Deployable {
       amount: msg.amount,
       queryId: msg.queryId,
       destination: msg.from,
-      responseDestination: msg.from,
+      responseDestination: myAddress(),
       customPayload: null,
       forwardTonAmount: 0,
       forwardPayload: msg.forwardPayload
     };
     
-    if (isFromA) {
-      send(
-        SendParameters{
-          to: self.jettonInfoA.address,
-          value: 0,
-          body: tokenTransfer.toCell(),
-          mode: SendRemainingValue + SendIgnoreErrors
-        }
-      );
-    } else {
-      send(
-        SendParameters{
-          to: self.jettonInfoB.address,
-          value: 0,
-          body: tokenTransfer.toCell(),
-          mode: SendRemainingValue + SendIgnoreErrors
-        }
-      );
-    }
+    send(
+      SendParameters{
+        to: sender(),
+        value: 0,
+        body: tokenTransfer.toCell(),
+        mode: SendRemainingValue + SendIgnoreErrors
+      }
+    );
   }
   
   get fun price(jetton: Address): Int {
