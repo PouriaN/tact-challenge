@@ -96,7 +96,7 @@ contract Task3 with Deployable {
   fun handleSwap(isFromA: Bool, msg: TokenNotification) {
     let swapOutput: Int = self.calculateSwapOutput(isFromA, msg.amount);
     
-    if ((isFromA && swapOutput > self.jettonInfoB.amount) || (!isFromA && swapOutput > self.jettonInfoA.amount)) {
+    if ((isFromA && swapOutput >= self.jettonInfoB.amount) || (!isFromA && swapOutput >= self.jettonInfoA.amount)) {
       self.rejectSwap(isFromA, msg);
     } else {
       self.performSwap(isFromA, msg, swapOutput);
@@ -105,9 +105,9 @@ contract Task3 with Deployable {
 
   fun calculateSwapOutput(isFromA: Bool, amount: Int): Int {
     if (isFromA) {
-      return self.price(self.jettonInfoB.address) * amount / self.decimal;
-    } else {
       return self.price(self.jettonInfoA.address) * amount / self.decimal;
+    } else {
+      return self.price(self.jettonInfoB.address) * amount / self.decimal;
     }
   }
 
@@ -170,9 +170,9 @@ contract Task3 with Deployable {
   
   get fun price(jetton: Address): Int {
     if (self.jettonInfoA.address == jetton && self.jettonInfoA.amount != 0) {
-      return self.jettonInfoB.amount * self.decimal / self.jettonInfoA.amount ;
+      return self.jettonInfoB.amount * self.decimal / self.jettonInfoA.amount;
     } else if (self.jettonInfoB.amount != 0) {
-      return self.jettonInfoA.amount * self.decimal / self.jettonInfoB.amount ;
+      return self.jettonInfoA.amount * self.decimal / self.jettonInfoB.amount;
     }
     return 0;
   }
