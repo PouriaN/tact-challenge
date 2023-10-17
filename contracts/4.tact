@@ -90,14 +90,10 @@ contract Task4 with Deployable {
           to: sender(),
           value: 0,
           body: "NFT is still locked".asComment(),
-          mode: SendRemainingBalance
+          mode: SendRemainingValue
         }
       );
     }
-    self.nftAddress = null;
-    self.prevOwner = null;
-    self.lockTime = 0;
-    self.isLocked = false;
     send(
       SendParameters{
         to: self.nftAddress!!,
@@ -113,6 +109,10 @@ contract Task4 with Deployable {
         mode: SendRemainingBalance
       }
     );
+    self.nftAddress = null;
+    self.prevOwner = null;
+    self.lockTime = 0;
+    self.isLocked = false;
   }
 
   get fun time(): Int {
