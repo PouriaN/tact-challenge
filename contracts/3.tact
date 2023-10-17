@@ -99,7 +99,7 @@ contract Task3 with Deployable {
     if ((isFromA && swapOutput > self.jettonInfoB.amount) || (!isFromA && swapOutput > self.jettonInfoA.amount)) {
       self.rejectSwap(isFromA, msg);
     } else {
-      self.performSwap(isFromA, msg, swapOutput);
+      // self.performSwap(isFromA, msg, swapOutput);
     }
   }
 
