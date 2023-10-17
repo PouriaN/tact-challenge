@@ -62,19 +62,9 @@ contract Task3 with Deployable {
 
   init(admin: Address, newJettonAddressA: Address, newJettonAddressB: Address) {
     self.owner = admin;
-    // self.jettonBalances.set(newJettonAddressA, JettonInfo{0, newJettonAddressB});
-    // self.jettonBalances.set(newJettonAddressB, JettonInfo{0, newJettonAddressA});
     self.jettonInfoA = JettonInfo{amount: 0, address: newJettonAddressA};
     self.jettonInfoB = JettonInfo{amount: 0, address: newJettonAddressB};
   }
-
-  // receive(msg: TokenTransfer) {
-  //   if (self.jettonInfoA.address == sender()) {
-  //     self.jettonInfoA.amount = self.jettonInfoA.amount + msg.amount;
-  //   } else if (self.jettonInfoB.address == sender()) {
-  //     self.jettonInfoB.amount = self.jettonInfoB.amount + msg.amount;
-  //   }
-  // }
 
   receive(msg: TokenNotification) {
     require(self.jettonInfoB.address == sender() || self.jettonInfoA.address == sender(), "token is not valid");
@@ -88,7 +78,7 @@ contract Task3 with Deployable {
           to: msg.from,
           bounce: false,
           value: 0,
-          mode: SendRemainingBalance + SendIgnoreErrors
+          mode: SendRemainingValue + SendIgnoreErrors
         }
       );
     } else {
@@ -109,7 +99,7 @@ contract Task3 with Deployable {
                 forwardTonAmount: context().value,
                 forwardPayload: msg.forwardPayload
               }.toCell(),
-              mode: SendRemainingBalance + SendIgnoreErrors
+              mode: SendRemainingValue + SendIgnoreErrors
             }
           );
         } else {
@@ -128,7 +118,7 @@ contract Task3 with Deployable {
                 forwardTonAmount: context().value,
                 forwardPayload: msg.forwardPayload
               }.toCell(),
-              mode: SendRemainingBalance + SendIgnoreErrors
+              mode: SendRemainingValue + SendIgnoreErrors
             }
           );
         }
@@ -148,7 +138,7 @@ contract Task3 with Deployable {
                 forwardTonAmount: context().value,
                 forwardPayload: msg.forwardPayload
               }.toCell(),
-              mode: SendRemainingBalance + SendIgnoreErrors
+              mode: SendRemainingValue + SendIgnoreErrors
             }
           );
         } else {
@@ -167,7 +157,7 @@ contract Task3 with Deployable {
                 forwardTonAmount: context().value,
                 forwardPayload: msg.forwardPayload
               }.toCell(),
-              mode: SendRemainingBalance + SendIgnoreErrors
+              mode: SendRemainingValue + SendIgnoreErrors
             }
           );
         }
