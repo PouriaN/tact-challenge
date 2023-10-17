@@ -119,7 +119,7 @@ contract Task3 with Deployable {
       responseDestination: myAddress(),
       customPayload: null,
       forwardTonAmount: 0,
-      forwardPayload: msg.forwardPayload
+      forwardPayload: emptySlice()
     };
     
     if (isFromA) {
@@ -155,7 +155,7 @@ contract Task3 with Deployable {
       responseDestination: myAddress(),
       customPayload: null,
       forwardTonAmount: 0,
-      forwardPayload: msg.forwardPayload
+      forwardPayload: emptySlice()
     };
     
     send(
