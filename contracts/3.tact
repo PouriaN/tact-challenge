@@ -67,9 +67,10 @@ contract Task3 with Deployable {
   }
 
   receive(msg: TokenNotification) {
-    require(self.jettonInfoB.address == sender() || self.jettonInfoA.address == sender(), "token is not valid");
+    let sender: Address = context().sender;
+    require(self.jettonInfoB.address == sender || self.jettonInfoA.address == sender, "token is not valid");
     let direction: Bool = true;
-    if (self.jettonInfoB.address == sender()) {
+    if (self.jettonInfoB.address == sender) {
       direction = false;
     }
     if (msg.from == self.owner) {

@@ -57,7 +57,7 @@ contract Task4 with Deployable {
   }
 
   receive(msg: OwnershipAssigned) {
-    let sender = context().sender;
+    let sender: Address = context().sender;
     if (self.nftAddress != null) {
       send(
         SendParameters{
@@ -82,7 +82,7 @@ contract Task4 with Deployable {
   }
 
   receive(msg: NftWithdrawal) {
-    let sender = context().sender;
+    let sender: Address = context().sender;
     require(sender == self.prevOwner, "Invalid sender");
     if (self.lockTime > now()) {
       self.reply("NFT is still locked".asComment());
