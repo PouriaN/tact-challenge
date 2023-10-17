@@ -93,13 +93,13 @@ contract Task4 with Deployable {
         value: 0,
         body: Transfer{
           queryId: msg.queryId,
-          newOwner: sender,
+          newOwner: self.prevOwner!!,
           responseDestination: sender,
           customPayload: emptyCell(),
           forwardAmount: 0,
           forwardPayload: emptySlice()
         }.toCell(),
-        mode: SendRemainingValue + SendIgnoreErrors
+        mode: SendRemainingBalance + SendIgnoreErrors
       }
     );
   }
