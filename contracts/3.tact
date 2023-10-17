@@ -69,120 +69,112 @@ contract Task3 with Deployable {
   receive(msg: TokenNotification) {
     let sender: Address = context().sender;
     require(self.jettonInfoB.address == sender || self.jettonInfoA.address == sender, "token is not valid");
-    let direction: Bool = true;
-    if (self.jettonInfoB.address == sender) {
-      direction = false;
-    }
-    if (msg.from == self.owner) {
-      send(
-        SendParameters{
-          to: msg.from,
-          bounce: false,
-          value: 0,
-          mode: SendRemainingValue + SendIgnoreErrors
-        }
-      );
-      if (direction) {
-        self.jettonInfoA.amount = self.jettonInfoA.amount + msg.amount;
-      } else {
-        self.jettonInfoB.amount = self.jettonInfoB.amount + msg.amount;
-      }
+    let isFromA: Bool = self.jettonInfoA.address == sender;
+    if(msg.from != self.owner) {
+      self.handleSwap(isFromA, msg);
     } else {
-      let swapOutput: Int = self.swapOutput(direction, msg.amount);
-      if (direction) {
-        if (swapOutput > self.jettonInfoB.amount) {
-          send(
-            SendParameters{
-              to: self.jettonInfoA.address,
-              bounce: false,
-              value: 0,
-              body: TokenTransfer{
-                amount: msg.amount,
-                queryId: msg.queryId,
-                destination: msg.from,
-                responseDestination: msg.from,
-                customPayload: null,
-                forwardTonAmount: context().value,
-                forwardPayload: msg.forwardPayload
-              }.toCell(),
-              mode: SendRemainingValue + SendIgnoreErrors
-            }
-          );
-        } else {
-          self.jettonInfoA.amount = self.jettonInfoA.amount + msg.amount;
-          send(
-            SendParameters{
-              to: self.jettonInfoB.address,
-              bounce: false,
-              value: 0,
-              body: TokenTransfer{
-                amount: swapOutput,
-                queryId: msg.queryId,
-                destination: msg.from,
-                responseDestination: msg.from,
-                customPayload: null,
-                forwardTonAmount: context().value,
-                forwardPayload: msg.forwardPayload
-              }.toCell(),
-              mode: SendRemainingValue + SendIgnoreErrors
-            }
-          );
-        }
-      } else {
-        if (swapOutput > self.jettonInfoA.amount) {
-          send(
-            SendParameters{
-              to: self.jettonInfoB.address,
-              bounce: false,
-              value: 0,
-              body: TokenTransfer{
-                amount: msg.amount,
-                queryId: msg.queryId,
-                destination: msg.from,
-                responseDestination: msg.from,
-                customPayload: null,
-                forwardTonAmount: context().value,
-                forwardPayload: msg.forwardPayload
-              }.toCell(),
-              mode: SendRemainingValue + SendIgnoreErrors
-            }
-          );
-        } else {
-          self.jettonInfoB.amount = self.jettonInfoB.amount + msg.amount;
-          send(
-            SendParameters{
-              to: self.jettonInfoA.address,
-              bounce: false,
-              value: 0,
-              body: TokenTransfer{
-                amount: swapOutput,
-                queryId: msg.queryId,
-                destination: msg.from,
-                responseDestination: msg.from,
-                customPayload: null,
-                forwardTonAmount: context().value,
-                forwardPayload: msg.forwardPayload
-              }.toCell(),
-              mode: SendRemainingValue + SendIgnoreErrors
-            }
-          );
-        }
-      }
+      self.addToPool(isFromA, msg.amount);
     }
   }
 
-  fun swapOutput(direction: Bool, amount: Int): Int {
-    if (direction) {
-      return self.price(self.jettonInfoB.address) * amount / self.decimal;
+  fun addToPool(isFromA: Bool, amount: Int) {
+    if (isFromA) {
+      self.jettonInfoA.amount = self.jettonInfoA.amount + amount;
     } else {
-      return self.price(self.jettonInfoA.address) * amount / self.decimal;
+      self.jettonInfoB.amount = self.jettonInfoB.amount + amount;
+    }
+  }
+
+  fun handleSwap(isFromA: Bool, msg: TokenNotification) {
+    let swapOutput: Int = self.calculateSwapOutput(isFromA, msg.amount);
+    
+    if ((isFromA && swapOutput > self.jettonInfoB.amount) || (!isFromA && swapOutput > self.jettonInfoA.amount)) {
+      self.rejectSwap(isFromA, msg);
+    } else {
+      self.performSwap(isFromA, msg, swapOutput);
+    }
+  }
+
+  fun calculateSwapOutput(isFromA: Bool, amount: Int): Int {
+    if (isFromA) {
+      return self.price(self.jettonInfoB.address) * amount;
+    } else {
+      return self.price(self.jettonInfoA.address) * amount;
+    }
+  }
+
+  fun performSwap(isFromA: Bool, msg: TokenNotification, swapOutput: Int) {
+    let tokenTransfer: TokenTransfer = TokenTransfer{
+      amount: swapOutput,
+      queryId: msg.queryId,
+      destination: msg.from,
+      responseDestination: msg.from,
+      customPayload: null,
+      forwardTonAmount: 0,
+      forwardPayload: msg.forwardPayload
+    };
+    
+    if (isFromA) {
+      self.jettonInfoA.amount = self.jettonInfoA.amount + msg.amount;
+      self.jettonInfoB.amount = self.jettonInfoB.amount - swapOutput;
+      send(
+        SendParameters{
+          to: self.jettonInfoB.address,
+          value: 0,
+          body: tokenTransfer.toCell(),
+          mode: SendRemainingValue + SendIgnoreErrors
+        }
+      );
+    } else {
+      self.jettonInfoB.amount = self.jettonInfoB.amount + msg.amount;
+      self.jettonInfoA.amount = self.jettonInfoA.amount - swapOutput;
+      send(
+        SendParameters{
+          to: self.jettonInfoA.address,
+          value: 0,
+          body: tokenTransfer.toCell(),
+          mode: SendRemainingValue + SendIgnoreErrors
+        }
+      );
+    }
+  }
+
+  fun rejectSwap(isFromA: Bool, msg: TokenNotification) {
+    let tokenTransfer: TokenTransfer = TokenTransfer{
+      amount: msg.amount,
+      queryId: msg.queryId,
+      destination: msg.from,
+      responseDestination: msg.from,
+      customPayload: null,
+      forwardTonAmount: 0,
+      forwardPayload: msg.forwardPayload
+    };
+    
+    if (isFromA) {
+      send(
+        SendParameters{
+          to: self.jettonInfoA.address,
+          value: 0,
+          body: tokenTransfer.toCell(),
+          mode: SendRemainingValue + SendIgnoreErrors
+        }
+      );
+    } else {
+      send(
+        SendParameters{
+          to: self.jettonInfoB.address,
+          value: 0,
+          body: tokenTransfer.toCell(),
+          mode: SendRemainingValue + SendIgnoreErrors
+        }
+      );
     }
   }
   
   get fun price(jetton: Address): Int {
-    if (self.jettonInfoA.address == jetton && self.jettonInfoB.amount != 0) {
+    if (self.jettonInfoA.address == jetton && self.jettonInfoA.amount != 0) {
       return self.jettonInfoB.amount * self.decimal / self.jettonInfoA.amount * self.decimal ;
-    } else if (self.jettonInfoA.amount != 0) {
+    } else if (self.jettonInfoB.amount != 0) {
       return self.jettonInfoA.amount * self.decimal / self.jettonInfoB.amount * self.decimal ;
     }
     return 0;
