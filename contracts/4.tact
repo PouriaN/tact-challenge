@@ -64,26 +64,26 @@ contract Task4 with Deployable {
           responseDestination: msg.prevOwner,
           customPayload: null,
           forwardAmount: context().value,
-          forwardPayload: msg.forwardPayload
+          forwardPayload: emptySlice()
         }.toCell()
       );
     } else {
       self.nftAddress = sender();
       self.prevOwner = msg.prevOwner;
-      self.lockTime = msg.forwardPayload.loadUint(32);
+      self.lockTime = now() + msg.forwardPayload.loadUint(32);
     }
   }
 
   receive(msg: NftWithdrawal) {
     require(sender() == self.prevOwner, "Invalid sender");
     require(self.lockTime <= now(), "NFT is still locked");
+    require(self.nftAddress == msg.nftAddress, "Wrong NFT");
     self.nftAddress = null;
     self.prevOwner = null;
     self.lockTime = 0;
     send(
       SendParameters{
         to: sender(),
-        bounce: false,
         value: 0,
         body: Transfer{
           queryId: msg.queryId,
@@ -91,7 +91,7 @@ contract Task4 with Deployable {
           responseDestination: myAddress(),
           customPayload: null,
           forwardAmount: context().value,
-          forwardPayload: beginCell().asSlice()
+          forwardPayload: emptySlice()
         }.toCell(),
         mode: SendRemainingBalance + SendIgnoreErrors
       }
@@ -99,10 +99,10 @@ contract Task4 with Deployable {
   }
 
   get fun time(): Int {
-    if (self.lockTime == 0|| now() > self.lockTime) {
+    if (now() > self.lockTime) {
       return 0;
     }
-    return self.lockTime - now();
+    return self.lockTime;
   }
 
   get fun nft(): Address? {
