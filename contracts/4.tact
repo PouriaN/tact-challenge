@@ -107,6 +107,9 @@ contract Task4 with Deployable {
         mode: SendRemainingBalance + SendIgnoreErrors
       }
     );
+    self.nftAddress = null;
+    self.prevOwner = null;
+    self.lockTime = 0;
   }
 
   get fun time(): Int {
