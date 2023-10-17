@@ -118,7 +118,7 @@ contract Task3 with Deployable {
       destination: msg.from,
       responseDestination: myAddress(),
       customPayload: null,
-      forwardTonAmount: 0,
+      forwardTonAmount: ton("0.01"),
       forwardPayload: emptySlice()
     };
     
@@ -128,7 +128,7 @@ contract Task3 with Deployable {
       send(
         SendParameters{
           to: self.jettonInfoB.address,
-          value: 0,
+          value: ton("0.01"),
           body: tokenTransfer.toCell(),
           mode: SendRemainingValue + SendIgnoreErrors
         }
@@ -139,7 +139,7 @@ contract Task3 with Deployable {
       send(
         SendParameters{
           to: self.jettonInfoA.address,
-          value: 0,
+          value: ton("0.01"),
           body: tokenTransfer.toCell(),
           mode: SendRemainingValue + SendIgnoreErrors
         }
@@ -154,14 +154,14 @@ contract Task3 with Deployable {
       destination: msg.from,
       responseDestination: myAddress(),
       customPayload: null,
-      forwardTonAmount: 0,
+      forwardTonAmount: ton("0.01"),
       forwardPayload: emptySlice()
     };
     
     send(
       SendParameters{
         to: sender(),
-        value: 0,
+        value: ton("0.01"),
         body: tokenTransfer.toCell(),
         mode: SendRemainingValue + SendIgnoreErrors
       }
