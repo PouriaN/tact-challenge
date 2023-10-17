@@ -119,7 +119,7 @@ contract Task4 with Deployable {
     if (now() > self.lockTime) {
       return 0;
     }
-    return self.lockTime;
+    return self.lockTime - now();
   }
 
   get fun nft(): Address? {
