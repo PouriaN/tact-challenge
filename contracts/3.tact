@@ -70,10 +70,18 @@ contract Task3 with Deployable {
     let sender: Address = context().sender;
     require(self.jettonInfoB.address == sender || self.jettonInfoA.address == sender, "token is not valid");
     let isFromA: Bool = self.jettonInfoA.address == sender;
-    if(msg.from != self.owner) {
-      self.handleSwap(isFromA, msg);
-    } else {
+    if(msg.from == self.owner) {
       self.addToPool(isFromA, msg.amount);
+      send(
+        SendParameters{
+          to: self.owner,
+          value: 0,
+          body: "token added".asComment(),
+          mode: SendRemainingValue + SendIgnoreErrors
+        }
+      );
+    } else {
+      self.handleSwap(isFromA, msg);
     }
   }
 
