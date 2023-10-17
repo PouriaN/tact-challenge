@@ -97,9 +97,9 @@ contract Task3 with Deployable {
 
   fun calculateSwapOutput(isFromA: Bool, amount: Int): Int {
     if (isFromA) {
-      return self.price(self.jettonInfoB.address) * amount;
+      return self.price(self.jettonInfoB.address) * amount / self.decimal;
     } else {
-      return self.price(self.jettonInfoA.address) * amount;
+      return self.price(self.jettonInfoA.address) * amount / self.decimal;
     }
   }
 
@@ -173,9 +173,9 @@ contract Task3 with Deployable {
   
   get fun price(jetton: Address): Int {
     if (self.jettonInfoA.address == jetton && self.jettonInfoA.amount != 0) {
-      return self.jettonInfoB.amount * self.decimal / self.jettonInfoA.amount * self.decimal ;
+      return self.jettonInfoB.amount * self.decimal / self.jettonInfoA.amount ;
     } else if (self.jettonInfoB.amount != 0) {
-      return self.jettonInfoA.amount * self.decimal / self.jettonInfoB.amount * self.decimal ;
+      return self.jettonInfoA.amount * self.decimal / self.jettonInfoB.amount ;
     }
     return 0;
   }
