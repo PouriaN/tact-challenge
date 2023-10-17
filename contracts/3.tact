@@ -130,7 +130,7 @@ contract Task3 with Deployable {
           to: self.jettonInfoB.address,
           value: ton("0.01"),
           body: tokenTransfer.toCell(),
-          mode: SendRemainingValue + SendIgnoreErrors
+          mode: SendIgnoreErrors
         }
       );
     } else {
@@ -141,7 +141,7 @@ contract Task3 with Deployable {
           to: self.jettonInfoA.address,
           value: ton("0.01"),
           body: tokenTransfer.toCell(),
-          mode: SendRemainingValue + SendIgnoreErrors
+          mode: SendIgnoreErrors
         }
       );
     }
@@ -163,7 +163,7 @@ contract Task3 with Deployable {
         to: sender(),
         value: ton("0.01"),
         body: tokenTransfer.toCell(),
-        mode: SendRemainingValue + SendIgnoreErrors
+        mode: SendIgnoreErrors
       }
     );
   }
