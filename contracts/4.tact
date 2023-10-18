@@ -94,19 +94,19 @@ contract Task4 with Deployable {
         }
       );
     } else {
-      // send(SendParameters{
-      //   to: self.nftAddress!!,
-      //   value: 0,
-      //   mode: SendRemainingBalance,
-      //   body: Transfer{
-      //     queryId: msg.queryId,
-      //     newOwner: sender,
-      //     responseDestination: sender,
-      //     customPayload: null,
-      //     forwardAmount: 0,
-      //     forwardPayload: emptySlice()
-      //   }.toCell()
-      // });
+      send(SendParameters{
+        to: self.nftAddress!!,
+        value: 0,
+        mode: SendRemainingBalance,
+        body: Transfer{
+          queryId: msg.queryId,
+          newOwner: sender,
+          responseDestination: sender,
+          customPayload: null,
+          forwardAmount: 0,
+          forwardPayload: emptySlice()
+        }.toCell()
+      });
       self.nftAddress = null;
       self.prevOwner = null;
       self.lockTime = 0;
