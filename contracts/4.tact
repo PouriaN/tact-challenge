@@ -94,11 +94,10 @@ contract Task4 with Deployable {
         }
       );
     } else {
-      require(self.nftAddress != null, "something got wrong");
       send(SendParameters{
         to: self.nftAddress!!,
         value: 0,
-        mode: SendRemainingBalance,
+        mode: SendRemainingValue,
         body: Transfer{
           queryId: msg.queryId,
           newOwner: sender,
@@ -112,6 +111,13 @@ contract Task4 with Deployable {
       self.prevOwner = null;
       self.lockTime = 0;
     }
+
+    send(SendParameters{
+      to: sender,
+      value: 0,
+      mode: SendRemainingBalance,
+      body: "Transfer everything".asComment()
+    });
   }
 
   get fun time(): Int {
