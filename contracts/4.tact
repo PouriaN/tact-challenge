@@ -84,7 +84,7 @@ contract Task4 with Deployable {
   receive(msg: NftWithdrawal) {
     let sender: Address = context().sender;
     require(sender == self.prevOwner, "Invalid sender");
-    if (self.lockTime >= now()) {
+    if (self.lockTime > now()) {
       send(
         SendParameters{
           to: sender,
@@ -94,19 +94,19 @@ contract Task4 with Deployable {
         }
       );
     } else {
-      send(SendParameters{
-        to: self.nftAddress!!,
-        value: 0,
-        mode: SendRemainingBalance,
-        body: Transfer{
-          queryId: msg.queryId,
-          newOwner: sender,
-          responseDestination: sender,
-          customPayload: null,
-          forwardAmount: 0,
-          forwardPayload: emptySlice()
-        }.toCell()
-      });
+      // send(SendParameters{
+      //   to: self.nftAddress!!,
+      //   value: 0,
+      //   mode: SendRemainingBalance,
+      //   body: Transfer{
+      //     queryId: msg.queryId,
+      //     newOwner: sender,
+      //     responseDestination: sender,
+      //     customPayload: null,
+      //     forwardAmount: 0,
+      //     forwardPayload: emptySlice()
+      //   }.toCell()
+      // });
       self.nftAddress = null;
       self.prevOwner = null;
       self.lockTime = 0;
