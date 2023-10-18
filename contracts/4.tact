@@ -82,7 +82,7 @@ contract Task4 with Deployable {
   }
 
   receive(msg: NftWithdrawal) {
-    let sender: Address = context().sender;
+    let sender: Address = sender();
     require(sender == self.prevOwner, "Invalid sender");
     if (self.lockTime > now()) {
       send(
@@ -107,17 +107,10 @@ contract Task4 with Deployable {
           forwardPayload: emptySlice()
         }.toCell()
       });
-      
+
       self.nftAddress = null;
       self.prevOwner = null;
       self.lockTime = 0;
-
-      send(SendParameters{
-        to: sender,
-        value: 0,
-        mode: SendRemainingBalance,
-        body: "Transfer everything".asComment()
-      });
     }
   }
 
