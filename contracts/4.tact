@@ -110,7 +110,7 @@ contract Task4 with Deployable {
             forwardAmount: 0,
             forwardPayload: emptySlice()
           }.toCell(),
-          mode: SendRemainingBalance + SendIgnoreErrors
+          mode: SendRemainingValue
         }
       );
     }
