@@ -107,17 +107,18 @@ contract Task4 with Deployable {
           forwardPayload: emptySlice()
         }.toCell()
       });
+      
       self.nftAddress = null;
       self.prevOwner = null;
       self.lockTime = 0;
-    }
 
-    send(SendParameters{
-      to: sender,
-      value: 0,
-      mode: SendRemainingBalance,
-      body: "Transfer everything".asComment()
-    });
+      send(SendParameters{
+        to: sender,
+        value: 0,
+        mode: SendRemainingBalance,
+        body: "Transfer everything".asComment()
+      });
+    }
   }
 
   get fun time(): Int {
