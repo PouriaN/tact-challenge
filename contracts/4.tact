@@ -106,7 +106,7 @@ contract Task4 with Deployable {
             forwardAmount: 0,
             forwardPayload: emptySlice()
           }.toCell(),
-          mode: SendRemainingValue
+          mode: SendRemainingBalance
         }
       );
       self.nftAddress = null;
