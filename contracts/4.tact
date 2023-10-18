@@ -94,6 +94,7 @@ contract Task4 with Deployable {
         }
       );
     } else {
+      require(self.nftAddress != null, "something got wrong");
       send(SendParameters{
         to: self.nftAddress!!,
         value: 0,
