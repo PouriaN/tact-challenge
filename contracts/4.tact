@@ -67,9 +67,9 @@ contract Task4 with Deployable {
             queryId: msg.queryId,
             newOwner: msg.prevOwner,
             responseDestination: msg.prevOwner,
-            customPayload: emptyCell(),
+            customPayload: null,
             forwardAmount: 0,
-            forwardPayload: msg.forwardPayload
+            forwardPayload: emptySlice()
           }.toCell(),
           mode: SendRemainingValue + SendIgnoreErrors
         }
@@ -115,10 +115,10 @@ contract Task4 with Deployable {
   }
 
   get fun time(): Int {
-    if (now() > self.lockTime) {
-      return 0;
+    if (self.lockTime > 0) {
+      return self.lockTime - now();
     }
-    return self.lockTime - now();
+    return 0;
   }
 
   get fun nft(): Address? {
