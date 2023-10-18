@@ -94,13 +94,9 @@ contract Task4 with Deployable {
         }
       );
     } else {
-      let nftAddress: Address = self.nftAddress!!;
-      self.nftAddress = null;
-      self.prevOwner = null;
-      self.lockTime = 0;
       send(
         SendParameters{
-          to: nftAddress,
+          to: self.nftAddress!!,
           value: 0,
           body: Transfer{
             queryId: msg.queryId,
@@ -113,6 +109,9 @@ contract Task4 with Deployable {
           mode: SendRemainingValue
         }
       );
+      self.nftAddress = null;
+      self.prevOwner = null;
+      self.lockTime = 0;
     }
   }
 
