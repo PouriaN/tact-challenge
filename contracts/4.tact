@@ -109,10 +109,10 @@ contract Task4 with Deployable {
           }.toCell(),
           mode: SendRemainingBalance
         }
-        self.nftAddress = null;
-        self.prevOwner = null;
-        self.lockTime = 0;
       );
+      self.nftAddress = null;
+      self.prevOwner = null;
+      self.lockTime = 0;
     }
   }
 
