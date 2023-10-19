@@ -143,12 +143,14 @@ contract Task5 with Deployable {
       send(
         SendParameters{
           to: sender,
-          value: 0,
+          bounce: true,
+          value: myBalance() - context().value - self.MinTonForStorage,
           body: AdminFetchProfit{
             queryId: msg.queryId
           }.toCell(),
-          mode: SendRemainingBalance
-      });
+          mode: SendRemainingValue + SendIgnoreErrors
+        }
+      );
     }
   }
 
