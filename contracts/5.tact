@@ -172,7 +172,7 @@ contract Task5 with Deployable {
 
   fun changeNFTOwnerAndDecreaseFee(nftAddress: Address, queryId: Int, newOwner: Address) {
     self.lockBalance = self.lockBalance + self.SmartContractFee;
-    nativeReserve(self.lockBalance, SendRemainingBalance);
+    nativeReserve(self.lockBalance, 0);
     send(
       SendParameters{
         to: nftAddress,
