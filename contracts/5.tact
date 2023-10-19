@@ -119,6 +119,7 @@ contract Task5 with Deployable {
   }
 
   receive(msg: AdminWithdrawalAllNFTs) {
+    let sender: Address = sender();
     let requireBalance: Int = self.WithdrawMinTon + (self.WithdrawMinTonForOneNFT * self.collectionLength);
     require(context().value >= requireBalance, "Insufficent funds");
     require(sender == self.owner, "Invalid sender");
@@ -126,7 +127,7 @@ contract Task5 with Deployable {
     repeat (repeatValue) {
       self.collectionLength = self.collectionLength - 1;
       let nftAddress: Address? = self.collection.get(self.collectionLength);
-      changeNFTOwner(nftAddress!!, msg.queryId, self.owner, self.WithdrawMinTonForOneNFT);
+      self.changeNFTOwnerWithValue(nftAddress!!, msg.queryId, sender, self.WithdrawMinTonForOneNFT);
     }
   }
 
