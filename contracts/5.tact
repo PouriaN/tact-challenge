@@ -87,7 +87,7 @@ contract Task5 with Deployable {
       self.collectionLength = self.collectionLength + 1;
     } else {
       if (context().value < ton("2.1")) {
-        require(ton("0.1") > 0, "Insufficient balance");
+        require(ton("0.1") <= context().value, "Insufficient balance");
         self.changeNFTOwner(sender, msg.queryId, msg.prevOwner);
       } else {
         let randomIndex: Int = random(0, self.collectionLength);
