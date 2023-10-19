@@ -67,24 +67,101 @@ message(0x5fcc3d14) Transfer {
 contract Task5 with Deployable {
   seed: Int as uint128;
   owner: Address;
-  
+  collection: map<Int as uint16, Address>;
+  collectionLength: Int = 0;
+
+  const SCFEE: Int = ton("2");
+  const MinTonForStorage: Int = ton("0.01");
+
   init(seed: Int, owner: Address) {
     self.owner = owner;
     self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
   }
 
   receive(msg: OwnershipAssigned) {
+    let sender: Address = sender();
+    if (msg.prevOwner == self.owner) {
+      self.collection.set(self.collectionLength, sender);
+      self.collectionLength = self.collectionLength + 1;
+    } else {
+      if (context().value < ton("2.1")) {
+        require(ton("0.1") > 0, "Insufficient balance");
+        self.changeNFTOwner(sender, msg.queryId, msg.prevOwner);
+      } else {
+        let randomIndex: Int = random(0, self.collectionLength);
+        if (randomIndex == self.collectionLength) {
+          self.changeNFTOwnerAndDecreaseFee(sender, msg.queryId, msg.prevOwner);
+        } else {
+          let randomNFTAddress: Address? = self.collection.get(randomIndex);
+          self.changeNFTOwnerAndDecreaseFee(randomNFTAddress!!, msg.queryId, msg.prevOwner);
+          self.collection.set(self.collectionLength, sender);
+        }
+      }
+    }
   }
 
   receive(msg: AdminWithdrawalProfit) {
+    let sender: Address = sender();
+    require(sender == self.owner, "Insufficient privelegies");
+    send(
+      SendParameters{
+        to: sender,
+        bounce: true,
+        value: myBalance() - context().value - self.MinTonForStorage,
+        body: AdminFetchProfit{
+          queryId: msg.queryId
+        }.toCell(),
+        mode: SendRemainingValue + SendIgnoreErrors
+      }
+    );
   }
 
   receive(msg: AdminWithdrawalAllNFTs) {
   }
 
+  fun changeNFTOwner(nftAddress: Address, queryId: Int, newOwner: Address) {
+    send(
+      SendParameters{
+        to: nftAddress,
+        value: 0,
+        body: Transfer{
+          queryId: queryId,
+          newOwner: newOwner,
+          responseDestination: newOwner,
+          customPayload: null,
+          forwardAmount: 0,
+          forwardPayload: emptySlice()
+        }.toCell(),
+        mode: SendRemainingValue
+      }
+    );
+  }
+
+  fun changeNFTOwnerAndDecreaseFee(nftAddress: Address, queryId: Int, newOwner: Address) {
+    let balance: Int = myBalance() - self.SCFEE;
+    send(
+      SendParameters{
+        to: nftAddress,
+        value: balance,
+        body: Transfer{
+          queryId: queryId,
+          newOwner: newOwner,
+          responseDestination: newOwner,
+          customPayload: null,
+          forwardAmount: balance,
+          forwardPayload: emptySlice()
+        }.toCell(),
+        mode: SendPayGasSeparately
+      }
+    );
+  }
+
   get fun profit(): Int { 
+    let balance: Int = myBalance() - self.MinTonForStorage;
+    return balance;
   }
   
   get fun nfts(): map<Int as uint16, Address> { 
+    return self.collection;
   }
 }
