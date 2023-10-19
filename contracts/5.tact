@@ -137,15 +137,15 @@ contract Task5 with Deployable {
     repeat (repeatValue) {
       self.collectionLength = self.collectionLength - 1;
       let nftAddress: Address? = self.collection.get(self.collectionLength);
-      self.changeNFTOwnerWithValue(nftAddress!!, msg.queryId, sender, ton("0.08"));
+      self.changeNFTOwnerWithValue(nftAddress!!, msg.queryId, sender, self.WithdrawMinTonForOneNFT);
     }
     if (self.collectionLength != 0) {
       send(
         SendParameters{
           to: myAddress(),
-          value: myBalance() - context().value - self.MinTonForStorage,
+          value: myBalance() - context().value,
           body: AdminWithdrawalAllNFTs{
-            queryId: msg.queryId
+            queryId: msg.queryId + 1
           }.toCell(),
           mode: SendRemainingValue
         }
