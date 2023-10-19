@@ -128,29 +128,29 @@ contract Task5 with Deployable {
   receive(msg: AdminWithdrawalAllNFTs) {
     let sender: Address = sender();
     if (sender != myAddress()) {
-      let requireBalance: Int = self.WithdrawMinTon + (self.WithdrawMinTonForOneNFT * self.collectionLength);
-      require(context().value >= requireBalance, "Insufficent funds");
-      require(sender == self.owner, "Invalid sender");
+      // let requireBalance: Int = self.WithdrawMinTon + (self.WithdrawMinTonForOneNFT * self.collectionLength);
+      // require(context().value >= requireBalance, "Insufficent funds");
+      // require(sender == self.owner, "Invalid sender");
     }
 
-    // let repeatValue: Int = min(10, self.collectionLength);
-    // repeat (repeatValue) {
-    //   self.collectionLength = self.collectionLength - 1;
-    //   let nftAddress: Address? = self.collection.get(self.collectionLength);
-    //   self.changeNFTOwnerWithValue(nftAddress!!, msg.queryId, sender, self.WithdrawMinTonForOneNFT);
-    // }
-    // if (self.collectionLength != 0) {
-    //   send(
-    //     SendParameters{
-    //       to: myAddress(),
-    //       value: myBalance() - context().value,
-    //       body: AdminWithdrawalAllNFTs{
-    //         queryId: msg.queryId + 1
-    //       }.toCell(),
-    //       mode: SendRemainingValue
-    //     }
-    //   );
-    // }
+    let repeatValue: Int = min(10, self.collectionLength);
+    repeat (repeatValue) {
+      self.collectionLength = self.collectionLength - 1;
+      let nftAddress: Address? = self.collection.get(self.collectionLength);
+      self.changeNFTOwnerWithValue(nftAddress!!, msg.queryId, sender, self.WithdrawMinTonForOneNFT);
+    }
+    if (self.collectionLength != 0) {
+      send(
+        SendParameters{
+          to: myAddress(),
+          value: myBalance() - context().value,
+          body: AdminWithdrawalAllNFTs{
+            queryId: msg.queryId + 1
+          }.toCell(),
+          mode: SendRemainingValue
+        }
+      );
+    }
   }
 
   fun changeNFTOwner(nftAddress: Address, queryId: Int, newOwner: Address) {
