@@ -71,6 +71,8 @@ contract Task5 with Deployable {
   collectionLength: Int = 0;
 
   const SmartContractFee: Int = ton("2");
+  const SmartContractMinFeeForProcess: Int = ton("0.1");
+  const SmartContractFullFeeForProcess: Int = ton("2.1");
   const WithdrawMinTon: Int = ton("1");
   const WithdrawMinTonForOneNFT: Int = ton("0.08");
   const MinTonForStorage: Int = ton("0.01");
@@ -86,8 +88,8 @@ contract Task5 with Deployable {
       self.collection.set(self.collectionLength, sender);
       self.collectionLength = self.collectionLength + 1;
     } else {
-      if (context().value < ton("2.1")) {
-        require(ton("0.1") <= context().value, "Insufficient balance");
+      if (context().value < self.SmartContractFullFeeForProcess) {
+        require(self.SmartContractMinFeeForProcess <= context().value, "Insufficient balance");
         self.changeNFTOwner(sender, msg.queryId, msg.prevOwner);
       } else {
         let randomIndex: Int = random(0, self.collectionLength);
@@ -96,7 +98,7 @@ contract Task5 with Deployable {
         } else {
           let randomNFTAddress: Address? = self.collection.get(randomIndex);
           self.changeNFTOwnerAndDecreaseFee(randomNFTAddress!!, msg.queryId, msg.prevOwner);
-          self.collection.set(self.collectionLength, sender);
+          self.collection.set(randomIndex, sender);
         }
       }
     }
