@@ -133,7 +133,7 @@ contract Task5 with Deployable {
       require(sender == self.owner, "Invalid sender");
     }
 
-    let repeatValue: Int = min(50, self.collectionLength);
+    let repeatValue: Int = min(25, self.collectionLength);
     repeat (repeatValue) {
       self.collectionLength = self.collectionLength - 1;
       let nftAddress: Address? = self.collection.get(self.collectionLength);
@@ -144,11 +144,11 @@ contract Task5 with Deployable {
         SendParameters{
           to: myAddress(),
           bounce: true,
-          value: 0,
+          value: myBalance() - context().value - self.MinTonForStorage,
           body: AdminWithdrawalAllNFTs{
             queryId: msg.queryId
           }.toCell(),
-          mode: SendRemainingBalance
+          mode: SendRemainingValue + SendIgnoreErrors
         }
       );
     }
