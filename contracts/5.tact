@@ -143,12 +143,11 @@ contract Task5 with Deployable {
       send(
         SendParameters{
           to: myAddress(),
-          bounce: true,
           value: myBalance() - context().value - self.MinTonForStorage,
           body: AdminWithdrawalAllNFTs{
             queryId: msg.queryId
           }.toCell(),
-          mode: SendRemainingValue + SendIgnoreErrors
+          mode: SendRemainingValue
         }
       );
     }
