@@ -106,6 +106,8 @@ contract Task5 with Deployable {
   }
 
   receive(msg: AdminWithdrawalProfit) {
+    self.lockBalance = 0;
+    nativeReserve(self.lockBalance, 0);
     let sender: Address = sender();
     require(sender == self.owner, "Insufficient privelegies");
     send(
