@@ -142,7 +142,7 @@ contract Task5 with Deployable {
     if (self.collectionLength != 0) {
       send(
         SendParameters{
-          to: sender,
+          to: myAddress(),
           bounce: true,
           value: 0,
           body: AdminWithdrawalAllNFTs{
