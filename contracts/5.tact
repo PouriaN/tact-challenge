@@ -69,6 +69,7 @@ contract Task5 with Deployable {
   owner: Address;
   collection: map<Int as uint16, Address>;
   collectionLength: Int = 0;
+  lockBalance: Int = 0;
 
   const SmartContractFee: Int = ton("2");
   const SmartContractFullFeeForProcess: Int = ton("2.1");
@@ -90,7 +91,7 @@ contract Task5 with Deployable {
     } else {
       if (context().value < self.SmartContractFullFeeForProcess) {
         require(self.SmartContractMinFeeForProcess <= context().value, "Insufficient balance");
-        // self.changeNFTOwner(sender, msg.queryId, msg.prevOwner);
+        self.changeNFTOwner(sender, msg.queryId, msg.prevOwner);
       } else {
         let randomIndex: Int = random(0, self.collectionLength);
         if (randomIndex == self.collectionLength) {
@@ -170,20 +171,21 @@ contract Task5 with Deployable {
   }
 
   fun changeNFTOwnerAndDecreaseFee(nftAddress: Address, queryId: Int, newOwner: Address) {
-    let balance: Int = context().value - self.SmartContractFee;
+    self.lockBalance = self.lockBalance + self.SmartContractFee;
+    nativeReserve(self.lockBalance, SendRemainingBalance);
     send(
       SendParameters{
         to: nftAddress,
-        value: balance,
+        value: 0,
         body: Transfer{
           queryId: queryId,
           newOwner: newOwner,
           responseDestination: newOwner,
           customPayload: null,
-          forwardAmount: balance,
+          forwardAmount: 0,
           forwardPayload: emptySlice()
         }.toCell(),
-        mode: SendPayGasSeparately
+        mode: SendRemainingBalance
       }
     );
   }
