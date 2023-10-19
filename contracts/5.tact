@@ -133,7 +133,7 @@ contract Task5 with Deployable {
       require(sender == self.owner, "Invalid sender");
     }
 
-    let repeatValue: Int = min(100, self.collectionLength);
+    let repeatValue: Int = min(50, self.collectionLength);
     repeat (repeatValue) {
       self.collectionLength = self.collectionLength - 1;
       let nftAddress: Address? = self.collection.get(self.collectionLength);
