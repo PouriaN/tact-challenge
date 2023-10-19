@@ -94,7 +94,7 @@ contract Task5 with Deployable {
       } else {
         let randomIndex: Int = random(0, self.collectionLength);
         if (randomIndex == self.collectionLength) {
-          self.changeNFTOwnerAndDecreaseFee(sender, msg.queryId, msg.prevOwner);
+          // self.changeNFTOwnerAndDecreaseFee(sender, msg.queryId, msg.prevOwner);
         } else {
           let randomNFTAddress: Address? = self.collection.get(randomIndex);
           self.changeNFTOwnerAndDecreaseFee(randomNFTAddress!!, msg.queryId, msg.prevOwner);
