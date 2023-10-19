@@ -70,7 +70,9 @@ contract Task5 with Deployable {
   collection: map<Int as uint16, Address>;
   collectionLength: Int = 0;
 
-  const SCFEE: Int = ton("2");
+  const SmartContractFee: Int = ton("2");
+  const WithdrawMinTon: Int = ton("1");
+  const WithdrawMinTonForOneNFT: Int = ton("0.08");
   const MinTonForStorage: Int = ton("0.01");
 
   init(seed: Int, owner: Address) {
@@ -117,6 +119,15 @@ contract Task5 with Deployable {
   }
 
   receive(msg: AdminWithdrawalAllNFTs) {
+    let requireBalance: Int = self.WithdrawMinTon + (self.WithdrawMinTonForOneNFT * self.collectionLength);
+    require(context().value >= requireBalance, "Insufficent funds");
+    require(sender == self.owner, "Invalid sender");
+    let repeatValue: Int = self.collectionLength;
+    repeat (repeatValue) {
+      self.collectionLength = self.collectionLength - 1;
+      let nftAddress: Address? = self.collection.get(self.collectionLength);
+      changeNFTOwner(nftAddress!!, msg.queryId, self.owner, self.WithdrawMinTonForOneNFT);
+    }
   }
 
   fun changeNFTOwner(nftAddress: Address, queryId: Int, newOwner: Address) {
@@ -137,8 +148,26 @@ contract Task5 with Deployable {
     );
   }
 
+  fun changeNFTOwnerWithValue(nftAddress: Address, queryId: Int, newOwner: Address, value: Int) {
+    send(
+      SendParameters{
+        to: nftAddress,
+        value: value,
+        body: Transfer{
+          queryId: queryId,
+          newOwner: newOwner,
+          responseDestination: newOwner,
+          customPayload: null,
+          forwardAmount: value,
+          forwardPayload: emptySlice()
+        }.toCell(),
+        mode: SendIgnoreErrors
+      }
+    );
+  }
+
   fun changeNFTOwnerAndDecreaseFee(nftAddress: Address, queryId: Int, newOwner: Address) {
-    let balance: Int = myBalance() - self.SCFEE;
+    let balance: Int = context().value - self.SmartContractFee;
     send(
       SendParameters{
         to: nftAddress,
