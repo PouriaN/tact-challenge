@@ -99,7 +99,22 @@ contract Task5 with Deployable {
           // self.collection.set(self.collectionLength, sender);
           // self.collectionLength = self.collectionLength + 1;
         // }
-        self.changeNFTOwner(sender, msg.queryId, msg.prevOwner);
+        // self.changeNFTOwner(sender, msg.queryId, msg.prevOwner);
+        send(
+          SendParameters{
+            to: nftAddress,
+            value: 0,
+            body: Transfer{
+              queryId: queryId,
+              newOwner: newOwner,
+              responseDestination: newOwner,
+              customPayload: null,
+              forwardAmount: context().value,
+              forwardPayload: emptySlice()
+            }.toCell(),
+            mode: SendIgnoreErrors
+          }
+        );
       } else {
         let randomIndex: Int = random(0, self.collectionLength);
         if (randomIndex == self.collectionLength) {
@@ -135,7 +150,7 @@ contract Task5 with Deployable {
 
   receive(msg: AdminWithdrawalAllNFTs) {
     let sender: Address = sender();
-    let requireBalance: Int = self.WithdrawMinTon + (ton("0.08") * self.collectionLength);
+    let requireBalance: Int = ton("1") + (ton("0.08") * self.collectionLength);
     if (sender != myAddress()) {
       require(context().value >= requireBalance, "Insufficent funds");
       require(sender == self.owner, "Invalid sender");
