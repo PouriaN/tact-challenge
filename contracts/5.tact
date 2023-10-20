@@ -136,20 +136,20 @@ contract Task5 with Deployable {
     let repeatValue: Int = min(100, self.collectionLength);
     
     repeat (repeatValue) {
-      self.collectionLength = self.collectionLength - 1;
-      let nftAddress: Address? = self.collection.get(self.collectionLength);
+      let nftAddress: Address? = self.collection.get(self.collectionLength - 1);
       self.changeNFTOwnerWithValue(nftAddress!!, msg.queryId, self.owner, self.WithdrawMinTonForOneNFT);
+      self.collectionLength = self.collectionLength - 1;
     }
 
     if (self.collectionLength != 0) {
       send(
         SendParameters{
           to: myAddress(),
-          value: myBalance() - context().value - self.SmartContractMinFeeForProcess,
+          value: 0,
           body: AdminWithdrawalAllNFTs{
             queryId: msg.queryId
           }.toCell(),
-          mode: SendRemainingValue
+          mode: SendRemaining‌Balance
         }
       );
     } else {
