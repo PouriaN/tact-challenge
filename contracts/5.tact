@@ -151,7 +151,7 @@ contract Task5 with Deployable {
         }
       );
     } else {
-      self.collectionLength
+      self.collection = emptyMap();
     }
   }
 
