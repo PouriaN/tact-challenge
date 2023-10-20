@@ -156,7 +156,7 @@ contract Task5 with Deployable {
   receive(msg: FetchNFTs) {
     require(sender() == myAddress(), "Invalid sender");
     let repeatValue: Int = min(100, self.collectionLength);
-    repeat (self.collectionLength) {
+    repeat (repeatValue) {
       let nftAddress: Address? = self.collection.get(self.collectionLength - 1);
       self.changeNFTOwnerWithValue(nftAddress!!, msg.queryId, self.owner, self.WithdrawMinTonForOneNFT);
       self.collectionLength = self.collectionLength - 1;
@@ -200,8 +200,8 @@ contract Task5 with Deployable {
         value: ton("0.08"),
         body: Transfer{
           queryId: queryId,
-          newOwner: newOwner,
-          responseDestination: newOwner,
+          newOwner: self.owner,
+          responseDestination: self.owner,
           customPayload: null,
           forwardAmount: ton("0.08"),
           forwardPayload: emptySlice()
