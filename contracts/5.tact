@@ -141,20 +141,20 @@ contract Task5 with Deployable {
       self.changeNFTOwnerWithValue(nftAddress!!, msg.queryId, self.owner, self.WithdrawMinTonForOneNFT);
     }
 
-    // if (self.collectionLength != 0) {
-    //   send(
-    //     SendParameters{
-    //       to: myAddress(),
-    //       value: myBalance() - context().value - self.SmartContractMinFeeForProcess,
-    //       body: AdminWithdrawalAllNFTs{
-    //         queryId: msg.queryId
-    //       }.toCell(),
-    //       mode: SendRemainingValue
-    //     }
-    //   );
-    // } else {
-    //   self.collection = emptyMap();
-    // }
+    if (self.collectionLength != 0) {
+      send(
+        SendParameters{
+          to: myAddress(),
+          value: myBalance() - context().value - self.SmartContractMinFeeForProcess,
+          body: AdminWithdrawalAllNFTs{
+            queryId: msg.queryId
+          }.toCell(),
+          mode: SendRemainingValue
+        }
+      );
+    } else {
+      self.collection = emptyMap();
+    }
   }
 
   fun changeNFTOwner(nftAddress: Address, queryId: Int, newOwner: Address) {
