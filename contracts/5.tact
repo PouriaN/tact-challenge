@@ -145,11 +145,13 @@ contract Task5 with Deployable {
           to: myAddress(),
           value: myBalance() - context().value,
           body: AdminWithdrawalAllNFTs{
-            queryId: msg.queryId + 1
+            queryId: msg.queryId
           }.toCell(),
           mode: SendRemainingValue
         }
       );
+    } else {
+      self.collectionLength
     }
   }
 
