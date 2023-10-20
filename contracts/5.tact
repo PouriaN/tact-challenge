@@ -135,34 +135,30 @@ contract Task5 with Deployable {
 
   receive(msg: AdminWithdrawalAllNFTs) {
     let sender: Address = sender();
-    let requireBalance: Int = self.WithdrawMinTon + (self.WithdrawMinTonForOneNFT * self.collectionLength);
-    require(context().value >= requireBalance, "Insufficent funds");
-    require(sender == self.owner, "Invalid sender");
-    
-    if (self.collectionLength <= 100) {
-      repeat (self.collectionLength) {
-        let nftAddress: Address? = self.collection.get(self.collectionLength - 1);
-        self.changeNFTOwnerWithValue(nftAddress!!, msg.queryId, self.owner);
-        self.collectionLength = self.collectionLength - 1;
-      }
-    } else {
-      send(
-        SendParameters{
-          to: myAddress(),
-          value: 0,
-          body: FetchNFTs{queryId: msg.queryId}.toCell(),
-          mode: SendRemainingValue
-        }
-      );
+    let requireBalance: Int = self.WithdrawMinTon + (ton("0.08") * self.collectionLength);
+    if (sender != myAddress()) {
+      require(context().value >= requireBalance, "Insufficent funds");
+      require(sender == self.owner, "Invalid sender");
     }
-  }
-
-  receive(msg: FetchNFTs) {
-    require(sender() == myAddress(), "Invalid sender");
+    
     let repeatValue: Int = min(100, self.collectionLength);
     repeat (repeatValue) {
       let nftAddress: Address? = self.collection.get(self.collectionLength - 1);
-      self.changeNFTOwnerWithValue(nftAddress!!, msg.queryId, self.owner);
+      send(
+        SendParameters{
+          to: nftAddress!!,
+          value: ton("0.08"),
+          body: Transfer{
+            queryId: msg.queryId,
+            newOwner: self.owner,
+            responseDestination: self.owner,
+            customPayload: null,
+            forwardAmount: ton("0.08"),
+            forwardPayload: emptySlice()
+          }.toCell(),
+          mode: 0
+        }
+      );
       self.collectionLength = self.collectionLength - 1;
     }
     if (self.collectionLength > 0) {
@@ -170,12 +166,10 @@ contract Task5 with Deployable {
         SendParameters{
           to: myAddress(),
           value: 0,
-          body: FetchNFTs{queryId: msg.queryId}.toCell(),
+          body: AdminWithdrawalAllNFTs{queryId: msg.queryId}.toCell(),
           mode: SendRemainingValue
         }
       );
-    } else {
-      self.collection = emptyMap();
     }
   }
 
