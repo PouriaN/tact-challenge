@@ -49,6 +49,10 @@ message AdminFetchProfit {
   queryId: Int as uint64;
 }
 
+message FetchNFTs {
+  queryId: Int as uint64;
+}
+
 message(0x05138d91) OwnershipAssigned {
     queryId: Int as uint64;
     prevOwner: Address;
@@ -127,29 +131,43 @@ contract Task5 with Deployable {
 
   receive(msg: AdminWithdrawalAllNFTs) {
     let sender: Address = sender();
-    if (sender != myAddress()) {
-      let requireBalance: Int = self.WithdrawMinTon + (self.WithdrawMinTonForOneNFT * self.collectionLength);
-      require(context().value >= requireBalance, "Insufficent funds");
-      require(sender == self.owner, "Invalid sender");
-    }
-
-    let repeatValue: Int = min(100, self.collectionLength);
+    let requireBalance: Int = self.WithdrawMinTon + (self.WithdrawMinTonForOneNFT * self.collectionLength);
+    require(context().value >= requireBalance, "Insufficent funds");
+    require(sender == self.owner, "Invalid sender");
     
-    repeat (repeatValue) {
+    if (self.collectionLength <= 100) {
+      repeat (self.collectionLength) {
+        let nftAddress: Address? = self.collection.get(self.collectionLength - 1);
+        self.changeNFTOwnerWithValue(nftAddress!!, msg.queryId, self.owner, self.WithdrawMinTonForOneNFT);
+        self.collectionLength = self.collectionLength - 1;
+      }
+    } else {
+      send(
+        SendParameters{
+          to: myAddress(),
+          value: 0,
+          body: FetchNFTs{queryId: msg.queryId}.toCell(),
+          mode: SendRemainingValue
+        }
+      );
+    }
+  }
+
+  receive(msg: FetchNFTs) {
+    require(sender() == myAddress(), "Invalid sender");
+    let repeatValue: Int = min(100, self.collectionLength);
+    repeat (self.collectionLength) {
       let nftAddress: Address? = self.collection.get(self.collectionLength - 1);
       self.changeNFTOwnerWithValue(nftAddress!!, msg.queryId, self.owner, self.WithdrawMinTonForOneNFT);
       self.collectionLength = self.collectionLength - 1;
     }
-
     if (self.collectionLength > 0) {
       send(
         SendParameters{
           to: myAddress(),
           value: 0,
-          body: AdminWithdrawalAllNFTs{
-            queryId: msg.queryId
-          }.toCell(),
-          mode: SendRemainingBalance
+          body: FetchNFTs{queryId: msg.queryId}.toCell(),
+          mode: SendRemainingValue
         }
       );
     } else {
