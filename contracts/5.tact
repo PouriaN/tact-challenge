@@ -197,13 +197,13 @@ contract Task5 with Deployable {
     send(
       SendParameters{
         to: nftAddress,
-        value: value,
+        value: ton("0.08"),
         body: Transfer{
           queryId: queryId,
           newOwner: newOwner,
           responseDestination: newOwner,
           customPayload: null,
-          forwardAmount: value,
+          forwardAmount: ton("0.08"),
           forwardPayload: emptySlice()
         }.toCell(),
         mode: 0
