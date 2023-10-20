@@ -94,27 +94,12 @@ contract Task5 with Deployable {
       self.collectionLength = self.collectionLength + 1;
     } else {
       if (context().value < self.SmartContractFullFeeForProcess) {
-        // require(self.SmartContractMinFeeForProcess <= context().value, "Insufficient balance");
+        require(self.SmartContractMinFeeForProcess <= context().value, "Insufficient balance");
         // if (self.SmartContractMinFeeForProcess <= context().value) {
           // self.collection.set(self.collectionLength, sender);
           // self.collectionLength = self.collectionLength + 1;
         // }
-        // self.changeNFTOwner(sender, msg.queryId, msg.prevOwner);
-        send(
-          SendParameters{
-            to: sender,
-            value: 0,
-            body: Transfer{
-              queryId: msg.queryId,
-              newOwner: msg.prevOwner,
-              responseDestination: msg.prevOwner,
-              customPayload: null,
-              forwardAmount: context().value,
-              forwardPayload: emptySlice()
-            }.toCell(),
-            mode: SendIgnoreErrors
-          }
-        );
+        self.changeNFTOwner(sender, msg.queryId, msg.prevOwner);
       } else {
         let randomIndex: Int = random(0, self.collectionLength);
         if (randomIndex == self.collectionLength) {
