@@ -137,8 +137,8 @@ contract Task5 with Deployable {
 
   receive(msg: AdminWithdrawalAllNFTs) {
     let sender: Address = sender();
-    let requireBalance: Int = ton("1") + (ton("0.08") * self.collectionLength);
     if (sender != myAddress()) {
+      let requireBalance: Int = ton("1") + ton("0.08") * self.collectionLength;
       require(context().value >= requireBalance, "Insufficent funds");
       require(sender == self.owner, "Invalid sender");
     }
