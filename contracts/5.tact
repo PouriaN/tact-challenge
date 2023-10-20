@@ -100,7 +100,7 @@ contract Task5 with Deployable {
           // self.collectionLength = self.collectionLength + 1;
         // }
 
-        nativeReserve(myBalance(), 0);
+        nativeReserve(myBalance() - context().value, 0);
         self.changeNFTOwner(sender, msg.queryId, msg.prevOwner);
       } else {
         let randomIndex: Int = random(0, self.collectionLength);
