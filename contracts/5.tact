@@ -153,8 +153,6 @@ contract Task5 with Deployable {
     }
   }
 
-  receive(msg: )
-
   fun changeNFTOwner(nftAddress: Address, queryId: Int, newOwner: Address) {
     send(
       SendParameters{
