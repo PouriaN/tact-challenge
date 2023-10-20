@@ -143,7 +143,7 @@ contract Task5 with Deployable {
       send(
         SendParameters{
           to: myAddress(),
-          value: myBalance() - context().value,
+          value: myBalance() - context().value - self.SmartContractMinFeeForProcess,
           body: AdminWithdrawalAllNFTs{
             queryId: msg.queryId
           }.toCell(),
