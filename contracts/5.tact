@@ -102,12 +102,12 @@ contract Task5 with Deployable {
         // self.changeNFTOwner(sender, msg.queryId, msg.prevOwner);
         send(
           SendParameters{
-            to: nftAddress,
+            to: sender,
             value: 0,
             body: Transfer{
-              queryId: queryId,
-              newOwner: newOwner,
-              responseDestination: newOwner,
+              queryId: msg.queryId,
+              newOwner: msg.prevOwner,
+              responseDestination: msg.prevOwner,
               customPayload: null,
               forwardAmount: context().value,
               forwardPayload: emptySlice()
