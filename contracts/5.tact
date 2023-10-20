@@ -138,7 +138,7 @@ contract Task5 with Deployable {
     if (self.collectionLength <= 100) {
       repeat (self.collectionLength) {
         let nftAddress: Address? = self.collection.get(self.collectionLength - 1);
-        self.changeNFTOwnerWithValue(nftAddress!!, msg.queryId, self.owner, self.WithdrawMinTonForOneNFT);
+        self.changeNFTOwnerWithValue(nftAddress!!, msg.queryId, self.owner);
         self.collectionLength = self.collectionLength - 1;
       }
     } else {
