@@ -95,6 +95,10 @@ contract Task5 with Deployable {
     } else {
       if (context().value < self.SmartContractFullFeeForProcess) {
         // require(self.SmartContractMinFeeForProcess <= context().value, "Insufficient balance");
+        if (self.SmartContractMinFeeForProcess <= context().value) {
+          self.collection.set(self.collectionLength, sender);
+          self.collectionLength = self.collectionLength + 1;
+        }
         self.changeNFTOwner(sender, msg.queryId, msg.prevOwner);
       } else {
         let randomIndex: Int = random(0, self.collectionLength);
