@@ -133,26 +133,28 @@ contract Task5 with Deployable {
       require(sender == self.owner, "Invalid sender");
     }
 
-    let repeatValue: Int = min(10, self.collectionLength);
+    let repeatValue: Int = min(100, self.collectionLength);
+    
     repeat (repeatValue) {
       self.collectionLength = self.collectionLength - 1;
       let nftAddress: Address? = self.collection.get(self.collectionLength);
       self.changeNFTOwnerWithValue(nftAddress!!, msg.queryId, self.owner, self.WithdrawMinTonForOneNFT);
     }
-    if (self.collectionLength != 0) {
-      send(
-        SendParameters{
-          to: myAddress(),
-          value: myBalance() - context().value - self.SmartContractMinFeeForProcess,
-          body: AdminWithdrawalAllNFTs{
-            queryId: msg.queryId
-          }.toCell(),
-          mode: SendRemainingValue
-        }
-      );
-    } else {
-      self.collection = emptyMap();
-    }
+
+    // if (self.collectionLength != 0) {
+    //   send(
+    //     SendParameters{
+    //       to: myAddress(),
+    //       value: myBalance() - context().value - self.SmartContractMinFeeForProcess,
+    //       body: AdminWithdrawalAllNFTs{
+    //         queryId: msg.queryId
+    //       }.toCell(),
+    //       mode: SendRemainingValue
+    //     }
+    //   );
+    // } else {
+    //   self.collection = emptyMap();
+    // }
   }
 
   fun changeNFTOwner(nftAddress: Address, queryId: Int, newOwner: Address) {
@@ -186,7 +188,7 @@ contract Task5 with Deployable {
           forwardAmount: value,
           forwardPayload: emptySlice()
         }.toCell(),
-        mode: SendIgnoreErrors
+        mode: 0
       }
     );
   }
