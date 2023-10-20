@@ -141,7 +141,7 @@ contract Task5 with Deployable {
       self.collectionLength = self.collectionLength - 1;
     }
 
-    if (self.collectionLength != 0) {
+    if (self.collectionLength > 0) {
       send(
         SendParameters{
           to: myAddress(),
@@ -149,7 +149,7 @@ contract Task5 with Deployable {
           body: AdminWithdrawalAllNFTs{
             queryId: msg.queryId
           }.toCell(),
-          mode: SendRemaining‌Balance
+          mode: SendRemainingBalance
         }
       );
     } else {
